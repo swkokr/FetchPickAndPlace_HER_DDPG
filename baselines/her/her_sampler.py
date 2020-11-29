@@ -49,7 +49,7 @@ def make_sample_her_transitions(replay_strategy, replay_k, reward_fun):
                 info[key.replace('info_', '')] = value
 
         # Re-compute reward since we may have substituted the goal.
-        reward_params = {k: transitions[k] for k in ['ag_2', 'g']}
+        reward_params = {k: transitions[k] for k in ['o', 'ag_2', 'g']}
         reward_params['info'] = info
         transitions['r'] = reward_fun(**reward_params)
 

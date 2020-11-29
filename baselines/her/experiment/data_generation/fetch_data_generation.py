@@ -35,6 +35,12 @@ def goToGoal(env, lastObs):
     episodeAcs = []
     episodeObs = []
     episodeInfo = []
+    print('lastObs', lastObs)
+    print('obs_space', env.observation_space)
+    print('obs', env.clone_full_state())
+    print(goal)
+    print(objectPos)
+    print(object_rel_pos)
 
     object_oriented_goal = object_rel_pos.copy()
     object_oriented_goal[2] += 0.03 # first make the gripper go slightly above the object

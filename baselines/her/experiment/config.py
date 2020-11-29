@@ -56,6 +56,7 @@ DEFAULT_PARAMS = {
 
 
 CACHED_ENVS = {}
+minDist = 1000
 
 
 def cached_make_env(make_env):
@@ -128,8 +129,33 @@ def configure_her(params):
     env = cached_make_env(params['make_env'])
     env.reset()
 
-    def reward_fun(ag_2, g, info):  # vectorized
-        return env.compute_reward(achieved_goal=ag_2, desired_goal=g, info=info)
+    def getMinObjOriGoal(curr_obs):
+        min_obj_ori_goal = 1000
+        max_obj_ori_goal = 0
+        for row in curr_obs:
+            rel_pos = row[6:9]
+            #print('rel_pos', rel_pos)
+            obj_ori_goal = rel_pos.copy()
+            obj_ori_goal[2] += 0.03
+            #print("obj_ori_goal", obj_ori_goal, obj_ori_goal[2])
+            if np.linalg.norm(obj_ori_goal) <= min_obj_ori_goal:
+                min_obj_ori_goal = np.linalg.norm(obj_ori_goal)
+            if np.linalg.norm(obj_ori_goal) >= max_obj_ori_goal:
+                max_obj_ori_goal = np.linalg.norm(obj_ori_goal)
+
+        #print("min val", min_obj_ori_goal)
+        #print("max val", max_obj_ori_goal)
+        return min_obj_ori_goal
+
+    def reward_fun(o, ag_2, g, info):  # vectorized
+        global minDist
+        curr_obs = o.copy()
+
+        w = -3.0
+        #w = -5.0 #showed 0.9
+        min_obj_ori_goal = getMinObjOriGoal(curr_obs)
+
+        return w*min_obj_ori_goal + env.compute_reward(achieved_goal=ag_2, desired_goal=g, info=info)
 
     # Prepare configuration for HER.
     her_params = {
